@@ -36,8 +36,12 @@ main{
 }
 
 #display p {
-     align-self: flex-end;
-     padding-right: 5px;
+    align-self: flex-end;
+    padding-right: 5px;
+  	word-wrap: break-word;
+		overflow-wrap: break-word;
+	  word-break: break-all;
+  	word-break: break-word;
 }
 
 #calc-interface {
@@ -62,4 +66,8 @@ main{
     font: inherit;
     font-family: 'Audiowide', cursive;
     font-size: 20px;
+}
+
+#calc-interface button:hover{
+	background: salmon;
 }
