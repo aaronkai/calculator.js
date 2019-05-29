@@ -1,5 +1,5 @@
 function add(a, b) {
-	return parseInt(a) + parseInt(b);
+	return parseFloat(a) + parseFloat(b);
 }
 
 function subtract(a, b) {
@@ -39,15 +39,14 @@ function operate(operator, number1, number2) {
 var equalButtonPressed = false;
 
 function evaluateExpression(operator, operation, array) {
-	for (i=0; i < array.length; i++) {
-		if (array[i] === operator){
-			var match = array.splice(i-1, 3);
+	for (i = 0; i < array.length; i++) {
+		if (array[i] === operator) {
+			var match = array.splice(i - 1, 3);
 			var result = operation(match[0], match[2]);
-			if (array.length === 0){
+			if (array.length === 0) {
 				array[0] = result
-			}
-			else{
-				array.splice(i-1, 0, result);
+			} else {
+				array.splice(i - 1, 0, result);
 				i = 0; //resets to beginning of array in case there are two operators of the same type
 			}
 		}
@@ -66,20 +65,20 @@ var equalButtonPressed = false;
 buttons.forEach((button) => {
 	button.addEventListener('click', (e) => {
 		const userInput = (e.target.textContent);
-		if ((equalButtonPressed) && (!isNaN(userInput))){
-				//if the user presses a number after performing a computation and pressing equal, they are starting a new calculation at this point
-				//so clear out display and theMath
-					equalButtonPressed = false;
-					theMath=[];
-					displayText = "";
+		if ((equalButtonPressed) && (!isNaN(userInput))) {
+			//if the user presses a number after performing a computation and pressing equal, they are starting a new calculation at this point
+			//so clear out display and theMath
+			equalButtonPressed = false;
+			theMath = [];
+			displayText = "";
 		}
-		
-// 		displayText += e.target.textContent;
-// 		displayOutput.textContent = displayText;
+
+		// 		displayText += e.target.textContent;
+		// 		displayOutput.textContent = displayText;
 
 		//Determine if the user pressed a number
 		//if user presses number 
-		if (!isNaN(userInput)) {
+		if (!isNaN(userInput) || userInput === ".") {
 			displayText += e.target.textContent;
 			displayOutput.textContent = displayText;
 			//if the math array is empty, create the first value in the array
@@ -98,44 +97,43 @@ buttons.forEach((button) => {
 				//if the last number in the math array was not a number, create a new array item 
 				//if the user has already pressed 'equals' they are continuing the prior operation
 				else {
-					if(equalButtonPressed){
+					if (equalButtonPressed) {
 						equalButtonPressed = false;
 					}
 					theMath.push(userInput);
 				}
-			}	
+			}
 		}
 		//if the equal button is pressed, return an answer
 		else if (userInput === "=") {
 			displayText += e.target.textContent;
 			displayOutput.textContent = displayText;
 			equalButtonPressed = true;
-			theMath = evaluateExpression("/",divide, theMath);
-			theMath = evaluateExpression("X",multiply, theMath);
-			theMath = evaluateExpression("-",subtract, theMath);
-			theMath = evaluateExpression("+",add, theMath);
+			theMath = evaluateExpression("/", divide, theMath);
+			theMath = evaluateExpression("X", multiply, theMath);
+			theMath = evaluateExpression("-", subtract, theMath);
+			theMath = evaluateExpression("+", add, theMath);
 			displayOutput.textContent = theMath[0];
 			displayText = theMath[0];
-		}
-		else if (userInput === "C"){
+		} else if (userInput === "C") {
 			equalButtonPressed = false;
-			theMath=[];
+			theMath = [];
 			displayText = "";
 			displayOutput.textContent = displayText;
-		}
-		else if (userInput === "del") {
+		} else if (userInput === "del") {
 			var stringToBackspace = theMath.pop();
 			theMath.push(stringToBackspace.substring(0, stringToBackspace.length - 1));
-			displayOutput.textContent = displayText.substring(0, displayText.textContent.length - 1);
+			displayText = displayText.substring(0, displayText.length - 1);
+			displayOutput.textContent = displayText;
 		}
 		//if a non-number in entered, create a new array item
-		else{
-				displayText += e.target.textContent;
-				displayOutput.textContent = displayText;
-				if(equalButtonPressed){
-					equalButtonPressed = false;
-				}
-				theMath.push(userInput);
+		else {
+			displayText += e.target.textContent;
+			displayOutput.textContent = displayText;
+			if (equalButtonPressed) {
+				equalButtonPressed = false;
 			}
+			theMath.push(userInput);
+		}
 	});
 });
