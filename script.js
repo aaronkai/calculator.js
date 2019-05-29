@@ -36,13 +36,13 @@ function operate(operator, number1, number2) {
 	return answer;
 }
 
-function processArray(operator, operation, array) {
+var equalButtonPressed = false;
+
+function evaluateExpression(operator, operation, array) {
 	for (i=0; i < array.length; i++) {
 		if (array[i] === operator){
 			var match = array.splice(i-1, 3);
-			console.log("match is :"+match);
 			var result = operation(match[0], match[2]);
-			console.log("result is: "+result);
 			if (array.length === 0){
 				array[0] = result
 			}
@@ -50,18 +50,19 @@ function processArray(operator, operation, array) {
 				array.splice(i-1, 0, result);
 				i = 0; //resets to beginning of array in case there are two operators of the same type
 			}
-			console.log(array);
 		}
 	}
 	return array;
 }
 
+//Global variables
 const buttons = document.querySelectorAll('button');
 var displayText = "";
-theMath = [];
 var displayOutput = document.querySelector('#display p');
+var theMath = [];
 var equalButtonPressed = false;
 
+//Get each button and create event listeners for each
 buttons.forEach((button) => {
 	button.addEventListener('click', (e) => {
 		const userInput = (e.target.textContent);
@@ -73,21 +74,20 @@ buttons.forEach((button) => {
 					displayText = "";
 		}
 		
-		displayText += e.target.textContent;
-		displayOutput.textContent = displayText;
+// 		displayText += e.target.textContent;
+// 		displayOutput.textContent = displayText;
 
 		//Determine if the user pressed a number
 		//if user presses number 
 		if (!isNaN(userInput)) {
-			console.log(" a number");
+			displayText += e.target.textContent;
+			displayOutput.textContent = displayText;
 			//if the math array is empty, create the first value in the array
 			if (theMath === undefined || theMath.length === 0) {
-				console.log("The Math was empty. Adding input")
 				theMath.push(userInput);
 			}
 			//if the math array is not empty
 			else {
-				console.log("The last item in the Math array is :" + theMath[theMath.length - 1]);
 				//if last item in math array was a number, add user input to it
 				if (!isNaN(theMath[theMath.length - 1])) {
 					var firstHalf = theMath.pop();
@@ -96,6 +96,7 @@ buttons.forEach((button) => {
 					theMath.push(combinedNumber);
 				}
 				//if the last number in the math array was not a number, create a new array item 
+				//if the user has already pressed 'equals' they are continuing the prior operation
 				else {
 					if(equalButtonPressed){
 						equalButtonPressed = false;
@@ -106,23 +107,35 @@ buttons.forEach((button) => {
 		}
 		//if the equal button is pressed, return an answer
 		else if (userInput === "=") {
-			var finalAnswer;
+			displayText += e.target.textContent;
+			displayOutput.textContent = displayText;
 			equalButtonPressed = true;
-			theMath = processArray("/",divide, theMath);
-			theMath = processArray("X",multiply, theMath);
-			theMath = processArray("-",subtract, theMath);
-			theMath = processArray("+",add, theMath);
-			console.log(theMath);
+			theMath = evaluateExpression("/",divide, theMath);
+			theMath = evaluateExpression("X",multiply, theMath);
+			theMath = evaluateExpression("-",subtract, theMath);
+			theMath = evaluateExpression("+",add, theMath);
 			displayOutput.textContent = theMath[0];
 			displayText = theMath[0];
 		}
+		else if (userInput === "C"){
+			equalButtonPressed = false;
+			theMath=[];
+			displayText = "";
+			displayOutput.textContent = displayText;
+		}
+		else if (userInput === "del") {
+			var stringToBackspace = theMath.pop();
+			theMath.push(stringToBackspace.substring(0, stringToBackspace.length - 1));
+			displayOutput.textContent = displayText.substring(0, displayText.textContent.length - 1);
+		}
 		//if a non-number in entered, create a new array item
 		else{
+				displayText += e.target.textContent;
+				displayOutput.textContent = displayText;
 				if(equalButtonPressed){
 					equalButtonPressed = false;
 				}
 				theMath.push(userInput);
 			}
-	console.log("The Math Array at the end of the loop is : " + theMath);
 	});
 });
